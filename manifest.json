@@ -1,0 +1,9 @@
+{
+  "name": "Recenter.ing",
+  "short_name": "Recenter",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait"
+}
