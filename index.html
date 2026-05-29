@@ -70,7 +70,7 @@
     const reader = document.getElementById('reader');
 
     for (let i = 1; i <= PAGE_COUNT; i++) {
-      const num = String(i+1).padStart(3, '0');
+      const num = String(i).padStart(3, '0');
       const section = document.createElement('section');
       section.className = 'page';
       section.setAttribute('aria-label', `Page ${i}`);
