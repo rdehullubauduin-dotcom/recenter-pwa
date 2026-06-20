@@ -62,6 +62,17 @@
       .reader, .page { height: 100svh; }
       .page img { height: 100svh; }
     }
+    @supports (height: 100svh) {
+  .reader, .page { height: 100svh; }
+  .page img { height: 100svh; }
+}
+
+@media (display-mode: browser) {
+  .page img {
+    width: 110%;
+    max-width: none;
+  }
+}
   </style>
 </head>
 <body>
