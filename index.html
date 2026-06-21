@@ -110,11 +110,6 @@ max-width: none;
       if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'ArrowLeft') go(-1);
     });
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    registrations.forEach(registration => registration.unregister());
-  });
-    }
   </script>
 </body>
 </html>
