@@ -108,7 +108,9 @@
     img.alt = `Recenter.ing page ${i}`;
     img.loading = i <= 3 ? 'eager' : 'lazy';
     img.decoding = 'async';
-
+    
+if (i === 10) continue;
+    
     section.appendChild(img);
 
     if (i === GIFT_PAGE) {
