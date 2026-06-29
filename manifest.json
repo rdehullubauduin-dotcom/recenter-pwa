@@ -3,7 +3,7 @@
   "short_name": "Recenter",
   "display": "standalone",
   "orientation": "portrait",
-  "start_url": "/",
+  "start_url": "/full.html",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
