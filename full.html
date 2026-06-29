@@ -121,6 +121,23 @@
 
     reader.appendChild(section);
   }
+  function pageHeight() {
+  return window.innerHeight;
+}
+
+function currentPage() {
+  return Math.round(reader.scrollTop / pageHeight());
+}
+
+function go(delta) {
+  const next = Math.min(PAGE_COUNT - 1, Math.max(0, currentPage() + delta));
+  reader.scrollTo({ top: next * pageHeight(), behavior: 'smooth' });
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ' || e.key === 'ArrowRight') go(1);
+  if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'ArrowLeft') go(-1);
+});
 </script>
 </body>
 </html>
