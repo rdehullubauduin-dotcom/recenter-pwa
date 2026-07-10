@@ -1,4 +1,4 @@
-const CACHE_NAME = 'recenter-v3';
+const CACHE_NAME = 'zerosutra-v1';
 
 const FILES_TO_CACHE = [
   '/',
