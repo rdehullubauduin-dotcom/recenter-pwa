@@ -8,7 +8,7 @@ const FILES_TO_CACHE = [
   '/icon-512.png'
 ];
 
-for (let i = 1; i <= 65; i++) {
+for (let i = 1; i <= 52; i++) {
   const number = String(i).padStart(3, '0');
   FILES_TO_CACHE.push(`/pages/${number}PWA.png`);
 }
