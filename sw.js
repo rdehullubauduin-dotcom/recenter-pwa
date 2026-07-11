@@ -1,66 +1,79 @@
-const CACHE_NAME = "zero-sutra-live-v1";
+const CACHE_NAME = "zero-sutra-runtime-v1";
 
-const APP_SHELL = [
-  "/",
-  "/index.html",
-  "/manifest.json"
-];
-
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
-  );
-
+self.addEventListener("install", () => {
+  // Nieuwe service worker niet laten wachten.
   self.skipWaiting();
 });
- 
+
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
-  );
+    Promise.all([
+      // Alle oude caches verwijderen.
+      caches.keys().then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+        )
+      ),
 
-  self.clients.claim();
+      // Meteen alle geopende pagina’s overnemen.
+      self.clients.claim()
+    ])
+  );
 });
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  if (request.method !== "GET") return;
-
-  // HTML en pagina-afbeeldingen:
-  // eerst de nieuwste versie van internet proberen.
-  if (
-    request.mode === "navigate" ||
-    url.pathname.startsWith("/pages/")
-  ) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy);
-          });
-
-          return response;
-        })
-        .catch(() => caches.match(request))
-    );
-
+  if (request.method !== "GET") {
     return;
   }
 
-  // Overige bestanden: cache gebruiken en anders downloaden.
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      return cached || fetch(request);
-    })
-  );
+  // Alleen bestanden van je eigen website behandelen.
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  const mustAlwaysBeFresh =
+    request.mode === "navigate" ||
+    url.pathname === "/" ||
+    url.pathname === "/index.html" ||
+    url.pathname === "/manifest.json" ||
+    url.pathname === "/sw.js" ||
+    url.pathname.startsWith("/pages/");
+
+  if (mustAlwaysBeFresh) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // Overige bestanden, zoals iconen: ook online controleren,
+  // met cache als offline reserve.
+  event.respondWith(networkFirst(request));
 });
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+
+  try {
+    const freshResponse = await fetch(request, {
+      cache: "no-store"
+    });
+
+    if (freshResponse && freshResponse.ok) {
+      await cache.put(request, freshResponse.clone());
+    }
+
+    return freshResponse;
+  } catch (error) {
+    const cachedResponse = await cache.match(request);
+
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    throw error;
+  }
+}
