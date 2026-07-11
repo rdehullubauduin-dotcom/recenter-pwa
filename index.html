@@ -192,10 +192,34 @@
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", async () => {
       try {
-        await navigator.serviceWorker.register("/sw.js");
-        console.log("Service worker registered");
+        const registration = await navigator.serviceWorker.register(
+          "/sw.js",
+          {
+            scope: "/",
+            updateViaCache: "none"
+          }
+        );
+
+        // Bij ieder bezoek direct controleren op een nieuwe sw.js.
+        await registration.update();
+
+        let reloading = false;
+
+        navigator.serviceWorker.addEventListener(
+          "controllerchange",
+          () => {
+            if (reloading) return;
+            reloading = true;
+            window.location.reload();
+          }
+        );
+
+        console.log("The Zero Sutra service worker active");
       } catch (error) {
-        console.error("Service worker registration failed:", error);
+        console.error(
+          "Service worker registration failed:",
+          error
+        );
       }
     });
   }
