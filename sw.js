@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zero-sutra-v2';
+const CACHE_NAME = 'zero-sutra';
 
 const FILES_TO_CACHE = [
   '/',
